@@ -8,7 +8,7 @@ public class Customers {
 
 	public Customers(String name, String address, String phoneNum) {
 
-		// Grab the id from the id from the database and increment it by one
+		// Grab the id from the database and increment it by one
 		// i++; wait for database before uncommenting
 		this.name = name;
 		this.phoneNum = phoneNum;
