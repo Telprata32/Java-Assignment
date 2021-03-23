@@ -2,6 +2,7 @@ package Shopping;
 
 //imports
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class main {
 
@@ -32,8 +33,9 @@ public class main {
 	public static void main(String[] args) {
 
 		// Prepare needed variables and objects
-		int usChoice, prodQty; // user's selection from the menu
-		double sumPurchase = 0; // Total amount of money spent for one transaction
+		int usChoice, prodQty = 0; // user's selection from the menu
+		double sumPurchase = 0; // Total amount of money spent for one transaction (one item)
+		LocalDate purchaseDate; // record date of purhase
 		Scanner inScan = new Scanner(System.in); // Scanner for user input
 
 		// Prompt a menu to the user to select a product to purchase
@@ -57,19 +59,24 @@ public class main {
 
 			// Prompt user to enter quantity of the product, perform only if the person did not choose to settle the purchase
 			if (usChoice != 0) {
-
 				System.out.print("Quantity of product: ");
 				prodQty = inScan.nextInt();
 				inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
-
 			}
 
-			// Calculate the total if the user hasn't chosen to settle purchase
+			// Calculate the total sum for each product purchase if the user hasn't chosen to settle purchase
 			if (usChoice == 0) {
 				break;
 			} else {
+				sumPurchase = prodQty * returnPrice(usChoice); // Purchase total for one product purchase
+				purchaseDate = LocalDate.now(); // record current date for respective purchase
 
-				sumPurchase += prodQty * returnPrice(usChoice);
+				// Store purchase into the database
+				/* ==================================================================================================
+				 * Insert database handling codes in here
+				 *
+				 * Query = Insert into "Transaction" (id,productName,productQty,unitPrice,purchaseDate) Values (....)
+				====================================================================================================*/
 			}
 
 		}
