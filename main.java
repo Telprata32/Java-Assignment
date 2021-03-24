@@ -3,6 +3,7 @@ package Shopping;
 //imports
 import java.util.Scanner;
 import java.time.LocalDate;
+import java.sql.*; // Import all mysql packages
 
 public class main {
 
@@ -30,13 +31,21 @@ public class main {
 
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassNotFoundException, SQLException{
 
+		// Before everything secure a connection to the mysql database first 
+		Class.forName("com.mysql.cj.jdbc.Driver"); 
+		Connection con; 
+		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825"); 
+		
+		// Statement variable to execute queries
+		Statement smt = con.createStatement();
+		
+		
 		// Prepare needed variables and objects
-		int usChoice, prodQty = 0; // user's selection from the menu
-		double sumPurchase = 0; // Total amount of money spent for one transaction (one item)
-		LocalDate purchaseDate; // record date of purhase
+		int usChoice /* user's selection from the menu*/, prodQty = 0 /* User selected quantity of product*/; 
 		Scanner inScan = new Scanner(System.in); // Scanner for user input
+		String[] productList = {"Toothpaste X","Toothpaste Y", "Pencil Case", "Faber Blue Pen", "Faber Red Pen"};
 
 		// Prompt a menu to the user to select a product to purchase
 		System.out.println("Welcome user, please select a product to record it's purchase\n");
@@ -45,11 +54,9 @@ public class main {
 		// Deploy in a while loop
 		while (true) {
 
-			System.out.println("1. Toothpaste X\tRM 30.45");
-			System.out.println("2. Toothpaste Y\tRM 26.75");
-			System.out.println("3. Pencil Case\tRM 15.00");
-			System.out.println("4. Faber Blue Pen\tRM4.35");
-			System.out.println("5. Faber red Pen\tRM4.35");
+			for(int i=0; i<productList.length; i++) {
+				System.out.println((i+1) + ". " + productList[i] + "\tRM " + returnPrice(i+1));
+			}
 			System.out.println("\nEnter 0 to settle purchase");
 
 			// Receive user's input
@@ -68,20 +75,14 @@ public class main {
 			if (usChoice == 0) {
 				break;
 			} else {
-				sumPurchase = prodQty * returnPrice(usChoice); // Purchase total for one product purchase
-				purchaseDate = LocalDate.now(); // record current date for respective purchase
-
-				// Store purchase into the database
-				/* ==================================================================================================
-				 * Insert database handling codes in here
-				 *
-				 * Query = Insert into "Transaction" (id,productName,productQty,unitPrice,purchaseDate) Values (....)
-				====================================================================================================*/
+				// Create transaction instance/object here, the creation of the object will be stored into the database
+				Transaction transIn = new Transaction(productList[usChoice-1], prodQty, returnPrice(usChoice));
 			}
 
 		}
 
 		inScan.close(); // close the scanner
+		con.close(); // Close the database connection
 	}
 
 }
