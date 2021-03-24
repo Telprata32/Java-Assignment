@@ -1,5 +1,5 @@
 /* =================================================================
- * Structure of Transaction table:
+ * Structure of Customer table:
  *
  *     ID   ||  Customer Name  ||  Phone Number  || 	Address
  *
