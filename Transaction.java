@@ -34,7 +34,7 @@ public class Transaction {
 		this.purchaseDate = LocalDate.now(); // Retrieve current date and store into the transaction record
 		
 		// Convert the id back into the required String format "TR0001";
-		String idString = "TR000" + id;
+		String idString = "TR" + String.format("%04d", id);
 		
 		// Store all the attributes into the database
 		
