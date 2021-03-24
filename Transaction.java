@@ -1,3 +1,11 @@
+/* =================================================================================================
+ * Structure of Transaction table:
+ *
+ *     ID   ||  Product Name  ||  Product Quantity || Price per Unit || Purchase Date || Customer ID
+ *
+ *  CHAR(6) ||   VARCHAR(20)  ||         INT       ||  DECIMAL(6,2)  ||      DATE     ||   CHAR(6)
+ *  
+=====================================================================================================*/
 package Shopping;
 
 import java.sql.*;
@@ -20,8 +28,10 @@ public class Transaction {
 		// Statement variable to execute queries
 		Statement smt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 
+		// Check if the table is empty first, if the table is empty start the ID from 1
+		// If it is not empty, take ID from the last row and then increment by 1
 		
-		// Grab the latest id from the id from the database and increment it by one
+		// Grab the latest ID from the ID from the database and increment it by one
 		ResultSet rs = smt.executeQuery("select ID from Transaction order by ID DESC LIMIT 1"); // Get the last row from the Transaction table
 		rs.next(); // Move the results set pointer to the first row first
 		id = Integer.parseInt(rs.getString(1).substring(2)); // Obtain the ID from the last row (latest Transaction ID)
