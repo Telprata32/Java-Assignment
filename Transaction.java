@@ -22,14 +22,11 @@ public class Transaction {
 
 		
 		// Grab the latest id from the id from the database and increment it by one
-		ResultSet rs = smt.executeQuery("select ID from Transaction"); // Get a result set of Transaction ID's from the Transaction table 
-		rs.afterLast(); // Obtain the last row of the result set (latest Transaction ID)
+		ResultSet rs = smt.executeQuery("select ID from Transaction order by ID DESC LIMIT 1"); // Get the last row from the Transaction table
+		rs.next(); // Move the results set pointer to the first row first
+		id = Integer.parseInt(rs.getString(1).substring(2)); // Obtain the ID from the last row (latest Transaction ID)
 		
-		while (rs.previous()) {
-			// Get only the number substring of the id
-			id = Integer.parseInt(rs.getString(1).substring(2));
-		}
-				
+		
 		id++; // Increment the id by 1
 		this.productName = productName;
 		this.unitPrice = unitPrice;
@@ -45,7 +42,7 @@ public class Transaction {
 		PreparedStatement prsmt = con.prepareStatement("Insert into Transaction Values (?,?,?,?,?,?)");
 		prsmt.setString(1, idString); // 1st parameter = ID
 		prsmt.setString(2,this.productName); // 2nd parameter = Name
-		prsmt.setInt(3, this.productQty); // 3rd paramter = Product quantity
+		prsmt.setInt(3, this.productQty); // 3rd parameter = Product quantity
 		prsmt.setDouble(4, this.unitPrice); // 4th parameter = Product price per unit
 		prsmt.setString(5, this.purchaseDate.toString()); // 5th parameter = Transaction date
 		prsmt.setString(6, "CR0001"); // 6th parameter = Customer ID (foreign key)
