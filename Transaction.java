@@ -1,11 +1,11 @@
-/* =================================================================================================
+/* ========================================================================================================================
  * Structure of Transaction table:
  *
- *     ID   ||  Product Name  ||  Product Quantity || Price per Unit || Purchase Date || Customer ID
+ *     ID   ||  Product Name || Type of Trans. ||  Product Quantity || Price per Unit || Purchase Date || Customer ID
  *
- *  CHAR(6) ||   VARCHAR(20)  ||         INT       ||  DECIMAL(6,2)  ||      DATE     ||   CHAR(6)
+ *  CHAR(6) ||   VARCHAR(20) ||   VARCHAR(10)  ||         INT       ||  DECIMAL(6,2)  ||      DATE     ||   CHAR(6)
  *  
-=====================================================================================================*/
+=========================================================================================================================*/
 package Shopping;
 
 import java.sql.*;
@@ -13,13 +13,13 @@ import java.time.LocalDate;
 
 public class Transaction {
 	private static int id;
-	private String productName;
+	private String productName, transType;
 	private int productQty;
 	private double unitPrice;
 	private LocalDate purchaseDate;
 	
 
-	public Transaction(String productName, int productQty, double unitPrice, int crID) throws ClassNotFoundException, SQLException{
+	public Transaction(String productName, String transType, int productQty, double unitPrice, int crID) throws ClassNotFoundException, SQLException{
 		// Before everything secure a connection to the mysql database first 
 		Class.forName("com.mysql.cj.jdbc.Driver"); 
 		Connection con; 
@@ -47,6 +47,7 @@ public class Transaction {
 		}
 		
 		this.productName = productName;
+		this.transType = transType;
 		this.unitPrice = unitPrice;
 		this.productQty = productQty;
 		this.purchaseDate = LocalDate.now(); // Retrieve current date and store into the transaction record
@@ -57,13 +58,14 @@ public class Transaction {
 		
 		// Store all the attributes into the database
 		// Prepare the query and then set the values for each parameter left as a "?"
-		PreparedStatement prsmt = con.prepareStatement("Insert into Transaction Values (?,?,?,?,?,?)");
+		PreparedStatement prsmt = con.prepareStatement("Insert into Transaction Values (?,?,?,?,?,?,?)");
 		prsmt.setString(1, idString); // 1st parameter = ID
 		prsmt.setString(2,this.productName); // 2nd parameter = Name
-		prsmt.setInt(3, this.productQty); // 3rd parameter = Product quantity
-		prsmt.setDouble(4, this.unitPrice); // 4th parameter = Product price per unit
-		prsmt.setString(5, this.purchaseDate.toString()); // 5th parameter = Transaction date
-		prsmt.setString(6, idString2); // 6th parameter = Customer ID (foreign key)
+		prsmt.setString(3,this.transType); // 3rd parameter = Product Type
+		prsmt.setInt(4, this.productQty); // 3rd parameter = Product quantity
+		prsmt.setDouble(5, this.unitPrice); // 4th parameter = Product price per unit
+		prsmt.setString(6, this.purchaseDate.toString()); // 5th parameter = Transaction date
+		prsmt.setString(7, idString2); // 6th parameter = Customer ID (foreign key)
 		
 		// After preparing the query, execute it
 		prsmt.executeUpdate();

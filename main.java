@@ -122,9 +122,10 @@ public class main {
 		
 		
 		// Prepare needed variables and objects
-		int usChoice /* user's selection from the menu*/, prodQty = 0 /* User selected quantity of product*/; 
+		int usChoice,tranChoice /* user's selection from the menu*/, prodQty = 0 /* User selected quantity of product*/; 
 		Scanner inScan = new Scanner(System.in); // Scanner for user input
 		String[] productList = {"Toothpaste X","Toothpaste Y", "Pencil Case", "Faber Blue Pen", "Faber Red Pen"};
+		String[] tranTypeList = {"Purchase", "Delivery", "Return"}; // Transaction types
 		String cusName; // Customer's name
 		
 		// Register the customer
@@ -155,12 +156,21 @@ public class main {
 				inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 			}
 
+			// Prompt user to selec transaction type
+			System.out.println("Choose your transaction type: \n");
+			for(int i=0; i<tranTypeList.length; i++) {
+				System.out.println((i+1) + ". " + tranTypeList[i]) ;
+			}
+			System.out.print("\n Transaction Type: ");
+			tranChoice = inScan.nextInt(); // obtain transaction type
+			inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
+
 			// Calculate the total sum for each product purchase if the user hasn't chosen to settle purchase
 			if (usChoice == 0) {
 				break;
 			} else {
 				// Create transaction instance/object here, the creation of the object will be stored into the database
-				Transaction transIn = new Transaction(productList[usChoice-1], prodQty, returnPrice(usChoice), checkCustomer(cusName));
+				Transaction transIn = new Transaction(productList[usChoice-1], tranTypeList[tranChoice-1], prodQty, returnPrice(usChoice), checkCustomer(cusName));
 			}
 
 		}
