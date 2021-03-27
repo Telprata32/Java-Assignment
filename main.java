@@ -122,7 +122,7 @@ public class main {
 		
 		
 		// Prepare needed variables and objects
-		int usChoice,tranChoice /* user's selection from the menu*/, prodQty = 0 /* User selected quantity of product*/; 
+		int usChoice,tranChoice=0 /* user's selection from the menu*/, prodQty = 0 /* User selected quantity of product*/; 
 		Scanner inScan = new Scanner(System.in); // Scanner for user input
 		String[] productList = {"Toothpaste X","Toothpaste Y", "Pencil Case", "Faber Blue Pen", "Faber Red Pen"};
 		String[] tranTypeList = {"Purchase", "Delivery", "Return"}; // Transaction types
