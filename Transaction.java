@@ -26,18 +26,26 @@ public class Transaction {
 		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825"); 
 				
 		// Statement variable to execute queries
-		Statement smt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		Statement smt = con.createStatement();
 
 		// Check if the table is empty first, if the table is empty start the ID from 1
 		// If it is not empty, take ID from the last row and then increment by 1
+		ResultSet rs1 = smt.executeQuery("Select exists (select 1 from customer)"); //returns 1 if records exists and 0 if otherwise
+		rs1.next(); // read the first line
 		
-		// Grab the latest ID from the ID from the database and increment it by one
-		ResultSet rs = smt.executeQuery("select ID from Transaction order by ID DESC LIMIT 1"); // Get the last row from the Transaction table
-		rs.next(); // Move the results set pointer to the first row first
-		id = Integer.parseInt(rs.getString(1).substring(2)); // Obtain the ID from the last row (latest Transaction ID)
+		// Use an if else to decide 
+		if (rs1.getBoolean(1)){
+			// Grab the latest ID from the ID from the database and increment it by one
+			ResultSet rs = smt.executeQuery("select ID from Transaction order by ID DESC LIMIT 1"); // Get the last row from the Transaction table
+			rs.next(); // Move the results set pointer to the first row first
+			id = Integer.parseInt(rs.getString(1).substring(2)); // Obtain the ID from the last row (latest Transaction ID)
+			
+			
+			id++; // Increment the id by 1
+		}else{
+			id = 1;
+		}
 		
-		
-		id++; // Increment the id by 1
 		this.productName = productName;
 		this.unitPrice = unitPrice;
 		this.productQty = productQty;
