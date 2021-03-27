@@ -30,7 +30,7 @@ public class Transaction {
 
 		// Check if the table is empty first, if the table is empty start the ID from 1
 		// If it is not empty, take ID from the last row and then increment by 1
-		ResultSet rs1 = smt.executeQuery("Select exists (select 1 from customer)"); //returns true if records exists and false if otherwise
+		ResultSet rs1 = smt.executeQuery("Select exists (select 1 from Transaction)"); //returns true if records exists and false if otherwise
 		rs1.next(); // read the first line
 		
 		// Use an if else to decide 

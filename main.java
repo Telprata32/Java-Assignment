@@ -25,7 +25,7 @@ public class main {
 
 		// Check if the table is empty first, if the table is empty start the ID from 1
 		// If it is not empty, take ID from the last row and then increment by 1
-		ResultSet rs1 = smt.executeQuery("Select exists (select 1 from customer)"); //returns true if records exists and false if otherwise
+		ResultSet rs1 = smt.executeQuery("Select exists (select 1 from Customer)"); //returns true if records exists and false if otherwise
 		rs1.next(); // read the first line
 			
 		// Use an if else to decide 
@@ -42,7 +42,7 @@ public class main {
 				PreparedStatement prst2 = con.prepareStatement("Select * from Customer where Name=?");
 				prst2.setString(1,name); // set the name
 
-				ResultSet rs3 = prst.executeQuery(); // Execute the query and receive returned result set 
+				ResultSet rs3 = prst2.executeQuery(); // Execute the query and receive returned result set 
 				rs3.next(); // go to the first row of the result set
 
 				// Retrieve all the customer's particulars  
@@ -51,6 +51,7 @@ public class main {
 			}
 			else{
 				// First time for this customer
+				System.out.println("This is your first time here, please enter your credentials\n");
 				// Prompt user to enter details for the first time
 				System.out.print("Enter your phone number: ");
 				String phoneNum = inScan.nextLine();
@@ -70,6 +71,7 @@ public class main {
 
 		}else{
 			// Create a the first record in the table
+			System.out.println("You are the first customer, please enter your credentials\n");
 			// Prompt user to enter details for the first time
 			System.out.print("Enter your phone number: ");
 			String phoneNum = inScan.nextLine();
@@ -130,7 +132,7 @@ public class main {
 		cusName = inScan.nextLine();		
 
 		// Prompt a menu to the user to select a product to purchase
-		System.out.println("Welcome user, please select a product to record it's purchase\n");
+		System.out.println("\nWelcome user, please select a product to record it's purchase\n");
 
 		// =========== Begin Main Operation ===================//
 		// Deploy in a while loop
