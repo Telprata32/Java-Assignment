@@ -154,16 +154,16 @@ public class main {
 				System.out.print("Quantity of product: ");
 				prodQty = inScan.nextInt();
 				inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
+				
+				// Prompt user to select transaction type
+				System.out.println("\nChoose your transaction type: \n");
+				for(int i=0; i<tranTypeList.length; i++) {
+					System.out.println((i+1) + ". " + tranTypeList[i]) ;
+				}
+				System.out.print("\n Transaction Type: ");
+				tranChoice = inScan.nextInt(); // obtain transaction type
+				inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 			}
-
-			// Prompt user to selec transaction type
-			System.out.println("Choose your transaction type: \n");
-			for(int i=0; i<tranTypeList.length; i++) {
-				System.out.println((i+1) + ". " + tranTypeList[i]) ;
-			}
-			System.out.print("\n Transaction Type: ");
-			tranChoice = inScan.nextInt(); // obtain transaction type
-			inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 
 			// Calculate the total sum for each product purchase if the user hasn't chosen to settle purchase
 			if (usChoice == 0) {
