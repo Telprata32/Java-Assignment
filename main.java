@@ -8,7 +8,10 @@ import java.sql.*; // Import all mysql packages
 public class main {
 
 	// Function to check if customer exists in the database if not create one and then store into the database
-	public static void checkCustomer(String name) throws ClassNotFoundException, SQLException{
+	public static int checkCustomer(String name) throws ClassNotFoundException, SQLException{
+		// Prepare the id to return to main class
+		int id;
+		
 		// Before everything secure a connection to the mysql database first 
 		Class.forName("com.mysql.cj.jdbc.Driver"); 
 		Connection con; 
@@ -36,6 +39,14 @@ public class main {
 
 			// Check if the result set returns a true or not
 			if(rs2.getBoolean(1)){
+				PreparedStatement prst2 = con.prepareStatement("Select * from Customer where Name=?");
+				prst2.setString(1,name); // set the name
+
+				ResultSet rs3 = prst.executeQuery(); // Execute the query and receive returned result set 
+				rs3.next(); // go to the first row of the result set
+
+				// Retrieve all the customer's particulars  
+				id = Integer.parseInt(rs3.getString(1).substring(2)); // Retrieve id and convert substring with numbers into Integer first
 				
 			}
 			else{
@@ -49,11 +60,11 @@ public class main {
 				// Grab the latest ID from the ID from the database and increment it by one
 				ResultSet rs = smt.executeQuery("select ID from Customer order by ID DESC LIMIT 1"); // Get the last row from the Transaction table
 				rs.next(); // Move the results set pointer to the first row first
-				int id = Integer.parseInt(rs.getString(1).substring(2)); // Obtain the ID from the last row (latest Transaction ID)
+				id = Integer.parseInt(rs.getString(1).substring(2)); // Obtain the ID from the last row (latest Transaction ID)
 
 				id++; // Increment the id by 1
 
-				// Create the class instance
+				// Create the class instance and store it into the database
 				Customers cusTemp = new Customers(id,name,address,phoneNum);
 			}
 
@@ -64,12 +75,15 @@ public class main {
 			String phoneNum = inScan.nextLine();
 			System.out.print("Enter your address: ");
 			String address = inScan.nextLine();
-			int id = 1;
+			id = 1;
 
+			// Create the class instance and store it into the database
 			Customers cusTemp = new Customers(id,name,address,phoneNum);
 		}
-
+		// Return customer's id for the transaction	
+		return id;
 	}
+	
 	// Function to return the price of the product
 	public static double returnPrice(int prodNum) { // prodNum = Product number according to the menu list of products (used for switch statement)
 
@@ -114,7 +128,6 @@ public class main {
 		// Register the customer
 		System.out.print("Enter your name: ");
 		cusName = inScan.nextLine();		
-		checkCustomer(cusName);
 
 		// Prompt a menu to the user to select a product to purchase
 		System.out.println("Welcome user, please select a product to record it's purchase\n");
@@ -145,7 +158,7 @@ public class main {
 				break;
 			} else {
 				// Create transaction instance/object here, the creation of the object will be stored into the database
-				Transaction transIn = new Transaction(productList[usChoice-1], prodQty, returnPrice(usChoice), cusTemp.getID());
+				Transaction transIn = new Transaction(productList[usChoice-1], prodQty, returnPrice(usChoice), checkCustomer(cusName));
 			}
 
 		}

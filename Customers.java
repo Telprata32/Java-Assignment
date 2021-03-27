@@ -45,10 +45,5 @@ public class Customers {
 
 		con.close(); // Close the database connection
 		}
-
-		// ID Accessor
-		public int getID(){
-			return this.id;
-		}
 }
 
