@@ -7,6 +7,69 @@ import java.sql.*; // Import all mysql packages
 
 public class main {
 
+	// Function to check if customer exists in the database if not create one and then store into the database
+	public static void checkCustomer(String name) throws ClassNotFoundException, SQLException{
+		// Before everything secure a connection to the mysql database first 
+		Class.forName("com.mysql.cj.jdbc.Driver"); 
+		Connection con; 
+		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825"); 
+					
+		// Statement variable to execute queries
+		Statement smt = con.createStatement();
+			
+		// Prepare a scanner
+		Scanner inScan = new Scanner(System.in);
+
+		// Check if the table is empty first, if the table is empty start the ID from 1
+		// If it is not empty, take ID from the last row and then increment by 1
+		ResultSet rs1 = smt.executeQuery("Select exists (select 1 from customer)"); //returns true if records exists and false if otherwise
+		rs1.next(); // read the first line
+			
+		// Use an if else to decide 
+		if (rs1.getBoolean(1)){
+			// Now check if the name entered by the used is already found in the table
+			PreparedStatement prst = con.prepareStatement("select exists (Select * from Customer where Name=?)");
+			prst.setString(1,name); // set the name
+
+			ResultSet rs2 = prst.executeQuery(); // Execute the query and receive returned result set 
+			rs2.next(); // go to the first row of the result set
+
+			// Check if the result set returns a true or not
+			if(rs2.getBoolean(1)){
+				
+			}
+			else{
+				// First time for this customer
+				// Prompt user to enter details for the first time
+				System.out.print("Enter your phone number: ");
+				String phoneNum = inScan.nextLine();
+				System.out.print("Enter your address: ");
+				String address = inScan.nextLine();
+
+				// Grab the latest ID from the ID from the database and increment it by one
+				ResultSet rs = smt.executeQuery("select ID from Customer order by ID DESC LIMIT 1"); // Get the last row from the Transaction table
+				rs.next(); // Move the results set pointer to the first row first
+				int id = Integer.parseInt(rs.getString(1).substring(2)); // Obtain the ID from the last row (latest Transaction ID)
+
+				id++; // Increment the id by 1
+
+				// Create the class instance
+				Customers cusTemp = new Customers(id,name,address,phoneNum);
+			}
+
+		}else{
+			// Create a the first record in the table
+			// Prompt user to enter details for the first time
+			System.out.print("Enter your phone number: ");
+			String phoneNum = inScan.nextLine();
+			System.out.print("Enter your address: ");
+			String address = inScan.nextLine();
+			int id = 1;
+
+			Customers cusTemp = new Customers(id,name,address,phoneNum);
+		}
+
+	}
 	// Function to return the price of the product
 	public static double returnPrice(int prodNum) { // prodNum = Product number according to the menu list of products (used for switch statement)
 
@@ -46,6 +109,12 @@ public class main {
 		int usChoice /* user's selection from the menu*/, prodQty = 0 /* User selected quantity of product*/; 
 		Scanner inScan = new Scanner(System.in); // Scanner for user input
 		String[] productList = {"Toothpaste X","Toothpaste Y", "Pencil Case", "Faber Blue Pen", "Faber Red Pen"};
+		String cusName; // Customer's name
+		
+		// Register the customer
+		System.out.print("Enter your name: ");
+		cusName = inScan.nextLine();		
+		checkCustomer(cusName);
 
 		// Prompt a menu to the user to select a product to purchase
 		System.out.println("Welcome user, please select a product to record it's purchase\n");
@@ -76,11 +145,11 @@ public class main {
 				break;
 			} else {
 				// Create transaction instance/object here, the creation of the object will be stored into the database
-				Transaction transIn = new Transaction(productList[usChoice-1], prodQty, returnPrice(usChoice));
+				Transaction transIn = new Transaction(productList[usChoice-1], prodQty, returnPrice(usChoice), cusTemp.getID());
 			}
 
 		}
-
+		
 		inScan.close(); // close the scanner
 		con.close(); // Close the database connection
 	}

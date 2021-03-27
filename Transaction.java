@@ -19,7 +19,7 @@ public class Transaction {
 	private LocalDate purchaseDate;
 	
 
-	public Transaction(String productName, int productQty, double unitPrice) throws ClassNotFoundException, SQLException{
+	public Transaction(String productName, int productQty, double unitPrice, int crID) throws ClassNotFoundException, SQLException{
 		// Before everything secure a connection to the mysql database first 
 		Class.forName("com.mysql.cj.jdbc.Driver"); 
 		Connection con; 
@@ -30,7 +30,7 @@ public class Transaction {
 
 		// Check if the table is empty first, if the table is empty start the ID from 1
 		// If it is not empty, take ID from the last row and then increment by 1
-		ResultSet rs1 = smt.executeQuery("Select exists (select 1 from customer)"); //returns 1 if records exists and 0 if otherwise
+		ResultSet rs1 = smt.executeQuery("Select exists (select 1 from customer)"); //returns true if records exists and false if otherwise
 		rs1.next(); // read the first line
 		
 		// Use an if else to decide 
@@ -51,11 +51,11 @@ public class Transaction {
 		this.productQty = productQty;
 		this.purchaseDate = LocalDate.now(); // Retrieve current date and store into the transaction record
 		
-		// Convert the id back into the required String format "TR0001";
+		// Convert the id back into the required String format "TR0001" , same for the customer ID
 		String idString = "TR" + String.format("%04d", id);
+		String idString2 = "CR" + String.format("%04d", crID);
 		
 		// Store all the attributes into the database
-		
 		// Prepare the query and then set the values for each parameter left as a "?"
 		PreparedStatement prsmt = con.prepareStatement("Insert into Transaction Values (?,?,?,?,?,?)");
 		prsmt.setString(1, idString); // 1st parameter = ID
@@ -63,7 +63,7 @@ public class Transaction {
 		prsmt.setInt(3, this.productQty); // 3rd parameter = Product quantity
 		prsmt.setDouble(4, this.unitPrice); // 4th parameter = Product price per unit
 		prsmt.setString(5, this.purchaseDate.toString()); // 5th parameter = Transaction date
-		prsmt.setString(6, "CR0001"); // 6th parameter = Customer ID (foreign key)
+		prsmt.setString(6, idString2); // 6th parameter = Customer ID (foreign key)
 		
 		// After preparing the query, execute it
 		prsmt.executeUpdate();
