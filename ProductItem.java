@@ -3,7 +3,7 @@ package Shopping;
 
 import java.util.Scanner; //Import Scanner Class
  
-public class ProductItem extends Supplier{
+public class ProductItem {
     
     private String productName;
     private int productQuantity;
@@ -33,17 +33,17 @@ public class ProductItem extends Supplier{
         return productPrice;
     }
     
-    public void getInfo(){
+	// Class constructor
+    public ProductItem(){
         Scanner input = new Scanner(System.in);
-        System.out.println("Enter the Supplier Name?");
-        setSupplierName(input.next());
-        System.out.println("What is your Product Name?");
-        setProductName(input.nextLine());
-        input.nextLine();
+        System.out.print("Product Name: ");
+		this.productName = input.nextLine();
         System.out.println("How many Product?");
         setProductQuantity(input.nextInt());
         System.out.println("What is your Product Price?");
         setProductPrice(input.nextDouble());
+
+		input.close(); // close the scanner
     }
     
     public void display(){
