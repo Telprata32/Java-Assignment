@@ -35,9 +35,13 @@ public class Supplier {
 		ResultSet rs2 = smt.executeQuery("Select ID from Supplier order by ID DESC limit 1"); //This query will return the last row of the table
 		rs2.next(); // move to the first row of the result set
 		this.suppID = Integer.parseInt(rs2.getString(1).substring(2));
+
+		this.suppID++;
+	}else{
+		this.suppID = 1;	
 	}
 	
-	// Prompt user to enter the supplier's credentials
+	// Prompt user to enter the supplier's particulars
 	System.out.print("Supplier's Name: ");
 	this.suppName = input.nextLine();
 	System.out.print("Supplier's Phone Number: ");
@@ -45,7 +49,9 @@ public class Supplier {
 	System.out.print("Supplier's Address");
 	this.Address = input.nextLine();
 	
-			
+	// After setting the particulars store the particular's into the database
+	// Prepare the prepareStatement for the query
+	PreparedStatement psmt = con.prepareStatement("Insert into Supplier values (?,?,?,?)");			
   }
   
   public void display(){
