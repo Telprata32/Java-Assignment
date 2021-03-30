@@ -1,3 +1,6 @@
+// Packages
+package Shopping;
+
 import java.util.Scanner; //Import Scanner Class
  
 public class ProductItem extends Supplier{
@@ -22,11 +25,11 @@ public class ProductItem extends Supplier{
         return productQuantity;
     }
     
-    public void setProductPrice(int pPrice){
+    public void setProductPrice(double pPrice){
         productPrice = pPrice;
     }
     
-    public int getProductPrice(){
+    public double getProductPrice(){
         return productPrice;
     }
     
@@ -36,9 +39,9 @@ public class ProductItem extends Supplier{
         setSupplierName(input.next());
         System.out.println("What is your Product Name?");
         setProductName(input.nextLine());
-        scan.nextLine();
+        input.nextLine();
         System.out.println("How many Product?");
-        setProductQuantity(input.nextInteger());
+        setProductQuantity(input.nextInt());
         System.out.println("What is your Product Price?");
         setProductPrice(input.nextDouble());
     }

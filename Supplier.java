@@ -1,3 +1,5 @@
+package Shopping;
+
 public class Supplier {
   private int suppID;
   private String suppName;
