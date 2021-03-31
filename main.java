@@ -9,81 +9,56 @@ public class main {
 
 	// Function to check if customer exists in the database if not create one and then store into the database
 	public static int checkCustomer(String name) throws ClassNotFoundException, SQLException{
-		// Prepare the id to return to main class
-		int id;
 		
 		// Before everything secure a connection to the mysql database first 
 		Class.forName("com.mysql.cj.jdbc.Driver"); 
 		Connection con; 
 		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825"); 
 					
-		// Statement variable to execute queries
-		Statement smt = con.createStatement();
-			
 		// Prepare a scanner
 		Scanner inScan = new Scanner(System.in);
 
-		// Check if the table is empty first, if the table is empty start the ID from 1
-		// If it is not empty, take ID from the last row and then increment by 1
-		ResultSet rs1 = smt.executeQuery("Select exists (select 1 from Customer)"); //returns true if records exists and false if otherwise
-		rs1.next(); // read the first line
+		// Check if the name entered by the used is already found in the table
+		PreparedStatement prst = con.prepareStatement("Select * from Customer where Name=?");
+		prst.setString(1,name); // set the name
+
+		ResultSet rs2 = prst.executeQuery(); // Execute the query and receive returned result set 
 			
 		// Use an if else to decide 
-		if (rs1.getBoolean(1)){
-			// Now check if the name entered by the used is already found in the table
-			PreparedStatement prst = con.prepareStatement("select exists (Select * from Customer where Name=?)");
-			prst.setString(1,name); // set the name
+		if (rs2.next()){
+			//Close inScan and con
+			con.close();
+			inScan.close();
 
-			ResultSet rs2 = prst.executeQuery(); // Execute the query and receive returned result set 
-			rs2.next(); // go to the first row of the result set
-
-			// Check if the result set returns a true or not
-			if(rs2.getBoolean(1)){
-				PreparedStatement prst2 = con.prepareStatement("Select * from Customer where Name=?");
-				prst2.setString(1,name); // set the name
-
-				ResultSet rs3 = prst2.executeQuery(); // Execute the query and receive returned result set 
-				rs3.next(); // go to the first row of the result set
-
-				// Retrieve all the customer's particulars  
-				id = Integer.parseInt(rs3.getString(1).substring(2)); // Retrieve id and convert substring with numbers into Integer first
-				
-			}
-			else{
-				// First time for this customer
-				System.out.println("This is your first time here, please enter your credentials\n");
-				// Prompt user to enter details for the first time
-				System.out.print("Enter your phone number: ");
-				String phoneNum = inScan.nextLine();
-				System.out.print("Enter your address: ");
-				String address = inScan.nextLine();
-
-				// Grab the latest ID from the ID from the database and increment it by one
-				ResultSet rs = smt.executeQuery("select ID from Customer order by ID DESC LIMIT 1"); // Get the last row from the Transaction table
-				rs.next(); // Move the results set pointer to the first row first
-				id = Integer.parseInt(rs.getString(1).substring(2)); // Obtain the ID from the last row (latest Transaction ID)
-
-				id++; // Increment the id by 1
-
-				// Create the class instance and store it into the database
-				Customers cusTemp = new Customers(id,name,address,phoneNum);
-			}
-
-		}else{
-			// Create a the first record in the table
-			System.out.println("You are the first customer, please enter your credentials\n");
+			// If the user exists then return the user's id to the main class
+			return rs2.getInt("Customer ID");
+		}
+	   	else
+		{
+			// Fist time customer
+			System.out.println("This is your first time here, please enter your credentials\n");
 			// Prompt user to enter details for the first time
 			System.out.print("Enter your phone number: ");
 			String phoneNum = inScan.nextLine();
 			System.out.print("Enter your address: ");
 			String address = inScan.nextLine();
-			id = 1;
 
 			// Create the class instance and store it into the database
-			Customers cusTemp = new Customers(id,name,address,phoneNum);
+			Customers.storeCustomers(name,address,phoneNum);
+			
+			// Check if the name entered by the used is already found in the table
+			PreparedStatement prst2 = con.prepareStatement("Select * from Customer where Name=?");
+			prst2.setString(1,name); // set the name
+	
+			ResultSet rs3 = prst.executeQuery(); // Execute the query and receive returned result set 
+
+			//Close inScan and con
+			con.close();
+			inScan.close();
+
+			rs3.next();
+			return rs3.getInt("Customer ID");
 		}
-		// Return customer's id for the transaction	
-		return id;
 	}
 	
 	// Function to return the price of the product
