@@ -123,7 +123,7 @@ public class main {
 		
 		
 		// Prepare needed variables and objects
-		int usChoice /* user's selection from the menu*/ 
+		int usChoice; /* user's selection from the menu*/ 
 		String[] operationList = {"Key in a purchase","Add a customer","Order products from supplier"};
 		String cusName; // Customer's name
 		
@@ -144,6 +144,28 @@ public class main {
 			usChoice = inScan.nextInt();
 			inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 
+			// Use a switch case to select operation
+			switch(usChoice){
+				
+				case 1:
+					// Prompt user with the menu of products		
+					ResultSet rsprod = smt.executeQuery("Select * from product"); // Execute query to get all products from the database
+					//Display every product for user to choose
+					while(rsprod.next()){
+						// initialise variable to count the products for numbering
+						int i = 1;
+						System.out.println(i + ". " + rsprod.getString("name") + "\t" + rsprod.getDouble("price")); // Print one product
+						i++;		
+					}
+					break;
+
+				default:
+					break;
+			}
+
+			if(usChoice == 0){
+				break;
+			}
 		}
 		
 		inScan.close(); // close the scanner
