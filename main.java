@@ -124,7 +124,7 @@ public class main {
 		
 		// Prepare needed variables and objects
 		int usChoice; /* user's selection from the menu*/ 
-		String[] operationList = {"Key in a purchase","Add a customer","Order products from supplier"};
+		String[] operationList = {"Key in an order for customer","Order products from supplier"};
 		String cusName; // Customer's name
 		
 		// Prompt a menu to the user to select an operation
@@ -148,6 +148,19 @@ public class main {
 			switch(usChoice){
 				
 				case 1:
+					// Create customer if he/she doesn't exist in the database using the checkCustomer() function
+					System.out.print("Enter customer's name: ");
+					cusName = inScan.nextLine();
+					// Check for customer in the database and store into the database if needed
+					int cusID = checkCustomer(cusName); // get the customer's ID to use as a foreign key for the order
+					
+					// Create an order for the customer, loop while the user still wants to punch in a product purchase
+					// Link the customer to the order record
+					/* ===================================================================================
+					 * Insert function to create an order record in the order table
+					 * =====================================================================================*/	
+					
+					// Now create the transaction and connect 
 					// Prompt user with the menu of products		
 					ResultSet rsprod = smt.executeQuery("Select * from product"); // Execute query to get all products from the database
 					//Display every product for user to choose
@@ -157,6 +170,20 @@ public class main {
 						System.out.println(i + ". " + rsprod.getString("name") + "\t" + rsprod.getDouble("price")); // Print one product
 						i++;		
 					}
+
+					// ========================= Create loop for respective order, to add purchases until ended by user =======================
+					// Engage with user to select product 
+					System.out.print("\nSelect product: ");
+					usChoice = inScan.nextInt();
+					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
+
+					// Use the usChoice integer to reference the respective id of the selected product
+					
+
+					break;
+
+				case 2:
+					
 					break;
 
 				default:
