@@ -170,16 +170,28 @@ public class main {
 						System.out.println(i + ". " + rsprod.getString("name") + "\t" + rsprod.getDouble("price")); // Print one product
 						i++;		
 					}
+					System.out.println("\nEnter 0 it you want to finalize or cancel the order");
 
 					// ========================= Create loop for respective order, to add purchases until ended by user =======================
-					// Engage with user to select product 
-					System.out.print("\nSelect product: ");
-					usChoice = inScan.nextInt();
-					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
+					while(true){
+						// Engage with user to select product 
+						System.out.print("\nSelect product or finalize order: ");
+						usChoice = inScan.nextInt();
+						inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 
-					// Use the usChoice integer to reference the respective id of the selected product
-					
+						// break the loop when user decides to end the order
+						if(usChoice == 0){
+							break;
+						}
 
+						// Prompt user to enter the quantity of the product
+						System.out.print("Quantity of product: ");
+						int prodQty = inScan.nextInt();
+						inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
+						
+						// Use the usChoice integer to reference the respective id of the selected product
+							
+					}
 					break;
 
 				case 2:
