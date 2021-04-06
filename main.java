@@ -61,30 +61,6 @@ public class main {
 		}
 	}
 	
-	// Function to return the price of the product
-	public static double returnPrice(int prodNum) { // prodNum = Product number according to the menu list of products (used for switch statement)
-
-		// Switch statement
-		switch (prodNum) {
-
-		case 1:
-			return 30.45;
-
-		case 2:
-			return 26.75;
-
-		case 3:
-			return 15.00;
-
-		case 4:
-			return 4.35;
-
-		default:
-			return 4.35;
-		}
-
-	}
-
 	// Function to store the transaction into the database
 	public static void purchaseProduct(int proID, int OrderID){
 		// Initialising variables,etc
@@ -153,16 +129,28 @@ public class main {
 					cusName = inScan.nextLine();
 					// Check for customer in the database and store into the database if needed
 					int cusID = checkCustomer(cusName); // get the customer's ID to use as a foreign key for the order
-					
+						
 					// Create an order for the customer, loop while the user still wants to punch in a product purchase
 					// Link the customer to the order record
 					/* ===================================================================================
 -					 * Insert function to create an order record in the order table
 -					 * =====================================================================================*/
 					// Create the latest OrderID and tie this entire batch of purchases to the OrderID
-					PreparedStatement prsm = con.prepareStatement("Insert into Orders (Order ID, Date, ) values ()");
+					PreparedStatement prsm = con.prepareStatement("Insert into Orders (Date,Customer ID) values (?,?)");
+					// Store the current time into a variable
+					LocalDate dtNow = LocalDate.now();
+					Date curDate = Date.valueOf(dtNow); // Convert LocalDate variable into Date format variable
+					// Set the parameters for the SQL Query
+					prsm.setDate(1, curDate);
+					prsm.setInt(2, cusID);
+					// Execute the query
+					prsm.executeUpdate();
 					
-					// Now create the transaction and connect 
+					// Get the ID of the order record that has just been added into the database
+					ResultSet ordRs = smt.executeQuery("Select 1 from Orders order by 'Order ID' DESC"); // Obtain the last row from the Orders table
+					int ordID = ordRs.getInt("Order ID");
+
+					// Now create the transaction 
 					// Prompt user with the menu of products		
 					ResultSet rsprod = smt.executeQuery("Select * from product"); // Execute query to get all products from the database
 					//Display every product for user to choose
@@ -172,7 +160,7 @@ public class main {
 						System.out.println(i + ". " + rsprod.getString("name") + "\t" + rsprod.getDouble("price")); // Print one product
 						i++;		
 					}
-					rsprod.beforeFirst();
+					rsprod.beforeFirst(); // Reset the pointer of the result set to before the beginning of the result set
 					System.out.println("\nEnter 0 it you want to finalize or cancel the order");
 
 					// ========================= Create loop for respective order, to add purchases until ended by user =======================
@@ -188,7 +176,7 @@ public class main {
 						}
 						else{
 							// Use the usChoice integer to reference the respective id of the selected product
-							purchaseProduct(usChoice); // Tie puchase to specific product ID
+							purchaseProduct(usChoice, ordID); // Tie puchase to specific product ID
 						}
 					}
 					break;
@@ -199,22 +187,23 @@ public class main {
 					System.out.println("Choose a product to order\n");
 
 					//Display every product for user to choose
-					while(rsprod.next()){
+					ResultSet rsprod1 = smt.executeQuery("Select * from product"); // Execute query to get all products from the database
+					while(rsprod1.next()){
 						// initialise variable to count the products for numbering
 						int i = 1;
-						System.out.println(i + ". " + rsprod.getString("name")); // Print one product
+						System.out.println(i + ". " + rsprod1.getString("name")); // Print one product
 						i++;		
 					}
-					rsprod.beforeFirst();
+					rsprod1.beforeFirst();
 					// obtain user's choice
 					System.out.print("Product to order: ");
 					usChoice = inScan.nextInt();
 					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 					
 					// Grab the product's id and refer to it's referred supplier id
-					while(rsprod.next()){
-						if(usChoice == rsprod.getInt("pId")){
-							suppID = rsprod.getInt("supplier_id");
+					while(rsprod1.next()){
+						if(usChoice == rsprod1.getInt("pId")){
+							suppID = rsprod1.getInt("supplier_id");
 							break;
 						}
 					}
