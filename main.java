@@ -86,7 +86,7 @@ public class main {
 	}
 
 	// Function to store the transaction into the database
-	public static void purchaseProduct(){
+	public static void purchaseProduct(int proID, int OrderID){
 		// Initialising variables,etc
 		int tranChoice=0; // integer to select transaction type
 		int prodQty = 0 /* User selected quantity of product*/; 
@@ -107,8 +107,8 @@ public class main {
 		tranChoice = inScan.nextInt(); // obtain transaction type
 		inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 		
-		// Calculate the total sum for each product purchase if the user hasn't chosen to settle purchase
-		Transaction transIn = new Transaction( tranTypeList[tranChoice-1], prodQty);
+		// Create transaction and store it
+		Transaction transIn = new Transaction(tranTypeList[tranChoice-1], prodQty, proID, OrderID);
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException{
@@ -157,8 +157,10 @@ public class main {
 					// Create an order for the customer, loop while the user still wants to punch in a product purchase
 					// Link the customer to the order record
 					/* ===================================================================================
-					 * Insert function to create an order record in the order table
-					 * =====================================================================================*/	
+-					 * Insert function to create an order record in the order table
+-					 * =====================================================================================*/
+					// Create the latest OrderID and tie this entire batch of purchases to the OrderID
+					PreparedStatement prsm = con.prepareStatement("Insert into Orders (Order ID, Date, ) values ()");
 					
 					// Now create the transaction and connect 
 					// Prompt user with the menu of products		
@@ -170,6 +172,7 @@ public class main {
 						System.out.println(i + ". " + rsprod.getString("name") + "\t" + rsprod.getDouble("price")); // Print one product
 						i++;		
 					}
+					rsprod.beforeFirst();
 					System.out.println("\nEnter 0 it you want to finalize or cancel the order");
 
 					// ========================= Create loop for respective order, to add purchases until ended by user =======================
@@ -183,18 +186,39 @@ public class main {
 						if(usChoice == 0){
 							break;
 						}
-
-						// Prompt user to enter the quantity of the product
-						System.out.print("Quantity of product: ");
-						int prodQty = inScan.nextInt();
-						inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
-						
-						// Use the usChoice integer to reference the respective id of the selected product
-							
+						else{
+							// Use the usChoice integer to reference the respective id of the selected product
+							purchaseProduct(usChoice); // Tie puchase to specific product ID
+						}
 					}
 					break;
 
 				case 2:
+					// Prepare variable to store required supplier ID
+					int suppID;
+					System.out.println("Choose a product to order\n");
+
+					//Display every product for user to choose
+					while(rsprod.next()){
+						// initialise variable to count the products for numbering
+						int i = 1;
+						System.out.println(i + ". " + rsprod.getString("name")); // Print one product
+						i++;		
+					}
+					rsprod.beforeFirst();
+					// obtain user's choice
+					System.out.print("Product to order: ");
+					usChoice = inScan.nextInt();
+					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
+					
+					// Grab the product's id and refer to it's referred supplier id
+					while(rsprod.next()){
+						if(usChoice == rsprod.getInt("pId")){
+							suppID = rsprod.getInt("supplier_id");
+							break;
+						}
+					}
+
 					
 					break;
 
