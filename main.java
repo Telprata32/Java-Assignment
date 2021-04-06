@@ -103,7 +103,7 @@ public class main {
 		for(int i=0; i<tranTypeList.length; i++) {
 			System.out.println((i+1) + ". " + tranTypeList[i]) ;
 		}
-		System.out.print("\n Transaction Type: ");
+		System.out.print("\nTransaction Type: ");
 		tranChoice = inScan.nextInt(); // obtain transaction type
 		inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 		
@@ -219,7 +219,16 @@ public class main {
 						}
 					}
 
-					
+					// Using suppID grab the respective details of the supplier from the database
+					PreparedStatement psm = con.prepareStatement("Select 1 from supplier where sId=?");
+					psm.setInt(1,suppID);				
+					ResultSet rsSup = psm.executeQuery();
+					rsSup.next();
+	
+					// Print the supplier's details
+					System.out.println("\nSupplier's details: \n");
+					System.out.println("Name: " + rsSup.getString("name"));
+					System.out.println("Contact Number: " + rsSup.getString("phone_number"));
 					break;
 
 				default:
