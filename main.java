@@ -100,7 +100,7 @@ public class main {
 		
 		// Prepare needed variables and objects
 		int usChoice; /* user's selection from the menu*/ 
-		String[] operationList = {"Key in an order for customer","Order products from supplier"};
+		String[] operationList = {"Key in an order for customer","Order products from supplier","See customer's order's", "List Products from specific supplier"};
 		String cusName; // Customer's name
 		
 		// Prompt a menu to the user to select an operation
@@ -132,9 +132,6 @@ public class main {
 						
 					// Create an order for the customer, loop while the user still wants to punch in a product purchase
 					// Link the customer to the order record
-					/* ===================================================================================
--					 * Insert function to create an order record in the order table
--					 * =====================================================================================*/
 					// Create the latest OrderID and tie this entire batch of purchases to the OrderID
 					PreparedStatement prsm = con.prepareStatement("Insert into Orders (Date,Customer ID) values (?,?)");
 					// Store the current time into a variable
@@ -186,12 +183,12 @@ public class main {
 					int suppID;
 					System.out.println("Choose a product to order\n");
 
-					//Display every product for user to choose
-					ResultSet rsprod1 = smt.executeQuery("Select * from product"); // Execute query to get all products from the database
+					//Display every product for user to choose, with reference to their respective supplier's in one table
+					ResultSet rsprod1 = smt.executeQuery("SELECT product.pId, product.name, supplier.name, supplier.phone_number FROM `supplier` INNER join product on supplier.sId = product.supplier_id ORDER BY product.pId ASC"); // Execute query to get all products from the database
+					// initialise variable to count the products for numbering
+					int i = 1;
 					while(rsprod1.next()){
-						// initialise variable to count the products for numbering
-						int i = 1;
-						System.out.println(i + ". " + rsprod1.getString("name")); // Print one product
+						System.out.println(i + ". " + rsprod1.getString(2)); // Print one product
 						i++;		
 					}
 					rsprod1.beforeFirst();
@@ -200,24 +197,16 @@ public class main {
 					usChoice = inScan.nextInt();
 					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 					
-					// Grab the product's id and refer to it's referred supplier id
+					// Using the product's ID selected by the user grab the respective details of the supplier from the database
 					while(rsprod1.next()){
-						if(usChoice == rsprod1.getInt("pId")){
-							suppID = rsprod1.getInt("supplier_id");
-							break;
+						if (usChoice == rsprod1.getInt(1)){
+							// Print the supplier's details
+							System.out.println("\nSupplier's details: \n");
+							System.out.println("Name: " + rsprod1.getString(3));
+							System.out.println("Contact Number: " + rsprod1.getString(4));
+							break;			
 						}
 					}
-
-					// Using suppID grab the respective details of the supplier from the database
-					PreparedStatement psm = con.prepareStatement("Select 1 from supplier where sId=?");
-					psm.setInt(1,suppID);				
-					ResultSet rsSup = psm.executeQuery();
-					rsSup.next();
-	
-					// Print the supplier's details
-					System.out.println("\nSupplier's details: \n");
-					System.out.println("Name: " + rsSup.getString("name"));
-					System.out.println("Contact Number: " + rsSup.getString("phone_number"));
 					break;
 
 				default:
