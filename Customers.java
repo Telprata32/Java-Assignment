@@ -10,6 +10,8 @@ package Shopping;
 
 import java.sql.*;
 
+import com.mysql.cj.protocol.Resultset;
+
 public class Customers {
 	private int id;
 	private String name;
@@ -35,9 +37,21 @@ public class Customers {
 		con.close(); // Close the database connection
 	}
 
-	// Constructor to instantiate the class instance when the record already exists in the database
-	public Customers(int id){
-			
+	// Function to list every available customer in the database
+	public static void listCustomers() throws SQLException, ClassNotFoundException{
+		// Before everything secure a connection to the mysql database first 
+		Class.forName("com.mysql.cj.jdbc.Driver"); 
+		Connection con; 
+		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825"); 
+
+		// Prepare Statement
+		Statement stm = con.createStatement();
+		
+		// Print the customers row by row
+		ResultSet cusRs = stm.executeQuery("Select * from customer");
+		while(cusRs.next()){
+			System.out.println(cusRs.getInt("Customer ID") + "\t" + cusRs.getString("Name" + "\t" + cusRs.getString("phone_number")));
+		}
 	}
 }
 

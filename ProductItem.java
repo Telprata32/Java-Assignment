@@ -61,35 +61,26 @@ public class ProductItem{
     //this method is to display all the product!
     public int getProducts(){
         try{
-            Class.forName("org.mariadb.jdbc.Driver");
-
-            con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/shoptrack", "root", "");
+        	Class.forName("com.mysql.cj.jdbc.Driver");
+        	
+        	con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825");
             stmt = con.createStatement();
             //ResultSet rs = stmt.executeQuery("SELECT * FROM `product`");
             
             //assign all record into resultset
             String Read = "SELECT * FROM `product`";
             ResultSet rs = stmt.executeQuery(Read);
-            int id = 0;
             
             //read through every line at the resultset
             while (rs.next()){
                 //assign database column data to variable
-                int productID = rs.getInt("pId");
                 String productName = rs.getString("name");
                 double productPrice = rs.getDouble("price");
-                int supplierID = rs.getInt("supplier_id");
-                
                 
                 //print out product column data information
-                System.out.println("Product ID: " + productID);
-                System.out.println("Product Name: " + productName);
-                System.out.println("Product Price: " + productPrice);
-                System.out.println("Supplier ID: " + supplierID);
-        
+                System.out.println("Product " + rs.getInt("pId") + ": " + productName + "\t" + productPrice + "\n");
             }
             rs.close();
-            return id;
         
         //catch SQL and syntax error
         }catch (SQLException se){
@@ -111,9 +102,9 @@ public class ProductItem{
     public ArrayList<Integer> checkProduct(){
         ArrayList<Integer> array = new ArrayList<>();
         try{
-            Class.forName("org.mariadb.jdbc.Driver");
-
-            con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/shoptrack", "root", "");
+        	Class.forName("com.mysql.cj.jdbc.Driver");
+        	
+        	con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825");
             stmt = con.createStatement();
             //ResultSet rs = stmt.executeQuery("SELECT * FROM `product`");
 
@@ -148,9 +139,9 @@ public class ProductItem{
     public String[] getCusProducts(int pID){
         String[] storeDetails = new String[4];
         try{
-            Class.forName("org.mariadb.jdbc.Driver");
-
-            con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/shoptrack", "root", "");
+        	Class.forName("com.mysql.cj.jdbc.Driver");
+        	
+        	con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825");
             stmt = con.createStatement();
             //ResultSet rs = stmt.executeQuery("SELECT * FROM `product`");
 

@@ -19,11 +19,12 @@ public class Ordering {
 		
 		// Get the ID of the order record that has just been added into the database
 		ResultSet ordRs = smt.executeQuery("Select 1 from Orders order by 'Order ID' DESC"); // Obtain the last row from the Orders table
+		ordRs.next();
 		this.orderID = ordRs.getInt("Order ID");
 	}
 	
 	// Function to create an Order record in the database table
-	public void saveOrder(int customerID) throws ClassNotFoundException, SQLException{
+	public static void saveOrder(int customerID) throws ClassNotFoundException, SQLException{
 		// Before everything secure a connection to the mysql database first 
 		Class.forName("com.mysql.cj.jdbc.Driver"); 
 		Connection con; 
@@ -39,8 +40,6 @@ public class Ordering {
 		prsm.setInt(2, customerID);
 		// Execute the query
 		prsm.executeUpdate();
-			
-		
 	}
 	
 	// Accessor to return the order's ID 

@@ -100,7 +100,7 @@ public class main {
 		
 		// Prepare needed variables and objects
 		int usChoice; /* user's selection from the menu*/ 
-		String[] operationList = {"Key in an order for customer","Order products from supplier","See customer's order's", "List Products from specific supplier"};
+		String[] operationList = {"Key in an order for a customer","Order products from supplier","See customer's order's", "List Products from specific supplier"};
 		String cusName; // Customer's name
 		
 		// Prompt a menu to the user to select an operation
@@ -133,31 +133,15 @@ public class main {
 					// Create an order for the customer, loop while the user still wants to punch in a product purchase
 					// Link the customer to the order record
 					// Create the latest OrderID and tie this entire batch of purchases to the OrderID
-					PreparedStatement prsm = con.prepareStatement("Insert into Orders (Date,Customer ID) values (?,?)");
-					// Store the current time into a variable
-					LocalDate dtNow = LocalDate.now();
-					Date curDate = Date.valueOf(dtNow); // Convert LocalDate variable into Date format variable
-					// Set the parameters for the SQL Query
-					prsm.setDate(1, curDate);
-					prsm.setInt(2, cusID);
-					// Execute the query
-					prsm.executeUpdate();
+					Ordering.saveOrder(cusID); // pass the customer ID into the class method
 					
-					// Get the ID of the order record that has just been added into the database
-					ResultSet ordRs = smt.executeQuery("Select 1 from Orders order by 'Order ID' DESC"); // Obtain the last row from the Orders table
-					int ordID = ordRs.getInt("Order ID");
-
+					// Create an object instance of the latest recorded order
+					Ordering order1 = new Ordering();
+					
 					// Now create the transaction 
 					// Prompt user with the menu of products		
-					ResultSet rsprod = smt.executeQuery("Select * from product"); // Execute query to get all products from the database
-					//Display every product for user to choose
-					while(rsprod.next()){
-						// initialise variable to count the products for numbering
-						int i = 1;
-						System.out.println(i + ". " + rsprod.getString("name") + "\t" + rsprod.getDouble("price")); // Print one product
-						i++;		
-					}
-					rsprod.beforeFirst(); // Reset the pointer of the result set to before the beginning of the result set
+					ProductItem prod1 = new ProductItem();
+					prod1.getProducts();
 					System.out.println("\nEnter 0 it you want to finalize or cancel the order");
 
 					// ========================= Create loop for respective order, to add purchases until ended by user =======================
@@ -173,14 +157,13 @@ public class main {
 						}
 						else{
 							// Use the usChoice integer to reference the respective id of the selected product
-							purchaseProduct(usChoice, ordID); // Tie puchase to specific product ID
+							purchaseProduct(usChoice, order1.getId()); // Tie puchase to specific product ID
 						}
 					}
 					break;
 
 				case 2:
-					// Prepare variable to store required supplier ID
-					int suppID;
+					// Prompt user to chooses a product to get supplier particulars for
 					System.out.println("Choose a product to order\n");
 
 					//Display every product for user to choose, with reference to their respective supplier's in one table
@@ -205,6 +188,41 @@ public class main {
 							System.out.println("Name: " + rsprod1.getString(3));
 							System.out.println("Contact Number: " + rsprod1.getString(4));
 							break;			
+						}
+					}
+					break;
+
+				case 3:
+					// List out the customers for the user to pick to check the orders
+					Customers.listCustomers();	
+
+					// Prompt user to select customer 
+					System.out.println("\nSelect customer: ");
+					usChoice = inScan.nextInt(); // Take selected customer's ID
+					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
+					
+					// List out the orders of the customer
+					// Prepare a query statement to return all orders including the transaction details of every customers
+					PreparedStatement prodPrs = con.prepareStatement("SELECT `Orders`.`Order ID`, Orders.Date, product.pId, product.name, product.price, transaction.Quantity,transaction.transaction_type FROM Orders inner join transaction on `Orders`.`Order ID`=`transaction`.`Order  ID` inner join product on `transaction`.`Product ID`= product.pId where `Orders`.`Customer ID`=?");
+					prodPrs.setInt(1,usChoice); // Set to the user chosen customer ID
+					
+					// ResultSet to store returned results from the prepared query statement above
+					ResultSet transRs = prodPrs.executeQuery();
+					
+					// Print the results and categorize according to orders
+					int orderNum = 0; // previous transaction's orderID
+					while(transRs.next()){
+						// If the current order number is not equal to previous order number (orderNum), print the following
+						if(orderNum!=transRs.getInt("Order ID")){
+							System.out.println("\nOrder " + transRs.getInt("Order ID") + "  (" + transRs.getDate("Date") + "): \n"); //Header for each set of orders
+							System.out.println("Product Name\tPrice\tQuantity\tTransaction Type");
+						}
+						
+						// Print the purchases 
+						System.out.println(transRs.getString("name") + "\t" + transRs.getDouble("price") + "\t" + transRs.getInt("Quantity") + "\t" + transRs.getString("transaction_type"));
+
+						// Update the orderNum for next iteration to reference
+						orderNum = transRs.getInt("Order ID");
 						}
 					}
 					break;
