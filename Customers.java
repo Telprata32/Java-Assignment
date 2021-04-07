@@ -26,7 +26,7 @@ public class Customers {
 		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825"); 
 				
 		// Prepare the query and then set the values for each parameter left as a "?"
-		PreparedStatement prsmt = con.prepareStatement("Insert into Customer (Name,phone_number,address) Values (?,?,?)");
+		PreparedStatement prsmt = con.prepareStatement("Insert into customer (Name,phone_number,address) Values (?,?,?)");
 		prsmt.setString(1,name); // 2nd parameter = Name
 		prsmt.setString(2,phoneNum); // 3rd parameter = Customer's phone number
 		prsmt.setString(3,address); // 3th parameter = Cutomer's address

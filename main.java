@@ -19,7 +19,7 @@ public class main {
 		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825"); 
 
 		// Check if the name entered by the used is already found in the table
-		PreparedStatement prst = con.prepareStatement("Select * from Customer where Name=?");
+		PreparedStatement prst = con.prepareStatement("Select * from customer where Name=?");
 		prst.setString(1,name); // set the name
 
 		ResultSet rs2 = prst.executeQuery(); // Execute the query and receive returned result set 
@@ -27,7 +27,6 @@ public class main {
 		// Use an if else to decide 
 		if (rs2.next()){
 			//Close inScan and con
-			con.close();
 			inScan.close();
 
 			// If the user exists then return the user's id to the main class
@@ -47,17 +46,14 @@ public class main {
 			Customers.storeCustomers(name,address,phoneNum);
 			
 			// Check if the name entered by the used is already found in the table
-			PreparedStatement prst2 = con.prepareStatement("Select * from Customer where Name=?");
+			PreparedStatement prst2 = con.prepareStatement("Select * from customer where Name=?");
 			prst2.setString(1,name); // set the name
 	
 			ResultSet rs3 = prst.executeQuery(); // Execute the query and receive returned result set 
 
-			//Close inScan and con
-			con.close();
-			inScan.close();
-
 			rs3.next();
 			return rs3.getInt("Customer ID");
+			
 		}
 	}
 	
@@ -223,8 +219,36 @@ public class main {
 
 						// Update the orderNum for next iteration to reference
 						orderNum = transRs.getInt("Order ID");
-						}
 					}
+
+					prodPrs.close();
+					break;
+
+				case 4:
+					// List out the suppliers
+					ResultSet supRs = smt.executeQuery("Select * from supplier");
+					//Print
+					System.out.println("Suppliers: \n");
+					while(supRs.next()){
+						System.out.println(supRs.getInt("sId") + ". " + supRs.getString("name") + "\t" + supRs.getString("phone_number"));
+					}
+
+					// Prompt user to select the supplier
+					System.out.print("\nSupplier select: ");
+					usChoice = inScan.nextInt(); // Receive input
+					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
+
+					//Print out all the products supplied by the supplier
+					PreparedStatement supPsm = con.prepareStatement("Select * from product where supplier_id=?");
+					supPsm.setInt(1,usChoice);
+					supRs = supPsm.executeQuery();
+
+					i=1;
+					while(supRs.next()){
+						System.out.println(i + ". " + supRs.getString("name") + "\t" + supRs.getString("price"));
+						i++;
+					}
+					supPsm.close();
 					break;
 
 				default:
