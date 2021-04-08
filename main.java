@@ -138,13 +138,13 @@ public class main {
 					Ordering order1 = new Ordering();
 					
 					// Now create the transaction 
-					// Prompt user with the menu of products		
 					ProductItem prod1 = new ProductItem();
-					prod1.getProducts();
-					System.out.println("\nEnter 0 it you want to finalize or cancel the order");
 
 					// ========================= Create loop for respective order, to add purchases until ended by user =======================
 					while(true){
+						// Prompt user with the menu of products		
+						prod1.getProducts();
+						System.out.println("\nEnter 0 it you want to finalize or cancel the order");
 						// Engage with user to select product 
 						System.out.print("\nSelect product or finalize order: ");
 						usChoice = inScan.nextInt();
