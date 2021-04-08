@@ -51,7 +51,7 @@ public class Customers {
 		ResultSet cusRs = stm.executeQuery("Select * from customer");
 		int i =1;
 		while(cusRs.next()){
-			System.out.println(i + ".\t" + cusRs.getString("Name") + "\t" + cusRs.getString("phone_number"));
+			System.out.println((i++) + ".\t" + cusRs.getString("Name") + "\t" + cusRs.getString("phone_number"));
 		}
 	}
 }

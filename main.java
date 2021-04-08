@@ -94,7 +94,7 @@ public class main {
 		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825"); 
 		
 		// Statement variable to execute queries
-		Statement smt = con.createStatement();
+		Statement smt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
 		
 		
 		// Prepare needed variables and objects
@@ -159,6 +159,7 @@ public class main {
 							purchaseProduct(usChoice, order1.getId()); // Tie puchase to specific product ID
 						}
 					}
+					usChoice = -1; // set to -1 so that the program doesn't immediately end after
 					break;
 
 				case 2:
@@ -187,7 +188,10 @@ public class main {
 					// Print the supplier's details
 					System.out.println("\nSupplier's details: \n");
 					System.out.println("Name: " + rsprod1.getString(3));
-					System.out.println("Contact Number: " + rsprod1.getString(4));
+					System.out.println("Contact Number: " + rsprod1.getString(4) + "\n");
+					// Give a small pause so that user can read at his own pace
+					System.out.println("Hit [Enter] to continue\n");
+					inScan.nextLine();
 					break;
 
 				case 3:
@@ -195,7 +199,7 @@ public class main {
 					Customers.listCustomers();	
 
 					// Prompt user to select customer 
-					System.out.println("\nSelect customer: ");
+					System.out.print("\nSelect customer: ");
 					usChoice = inScan.nextInt(); // Take selected customer's ID
 					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 					
@@ -208,7 +212,7 @@ public class main {
 
 					// List out the orders of the customer
 					// Prepare a query statement to return all orders including the transaction details of every customers
-					PreparedStatement prodPrs = con.prepareStatement("SELECT `Orders`.`Order ID`, Orders.Date, product.pId, product.name, product.price, transaction.Quantity,transaction.transaction_type FROM Orders inner join transaction on `Orders`.`Order ID`=`transaction`.`Order  ID` inner join product on `transaction`.`Product ID`= product.pId where `Orders`.`Customer ID`=?");
+					PreparedStatement prodPrs = con.prepareStatement("SELECT `Orders`.`Order ID`, Orders.Date, product.pId, product.name, product.price, transaction.Quantity,transaction.transaction_type FROM Orders inner join transaction on `Orders`.`Order ID`=`transaction`.`Order ID` inner join product on `transaction`.`Product ID`= product.pId where `Orders`.`Customer ID`=? Order by `Order ID` ASC");
 					prodPrs.setInt(1,usChoice); // Set to the user chosen customer ID
 					
 					// ResultSet to store returned results from the prepared query statement above
@@ -216,19 +220,23 @@ public class main {
 					
 					// Print the results and categorize according to orders
 					int orderNum = 0; // previous transaction's orderID
+					int l=1; // Counter for diplaying order number
 					while(transRs.next()){
 						// If the current order number is not equal to previous order number (orderNum), print the following
 						if(orderNum!=transRs.getInt(1)){
-							System.out.println("\nOrder " + transRs.getInt(1) + "  (" + transRs.getDate("Date") + "): \n"); //Header for each set of orders
+							System.out.println("\nOrder " + (l++) + "  (" + transRs.getDate("Date") + "): \n"); //Header for each set of orders
 							System.out.println("Product Name\tPrice\tQuantity\tTransaction Type");
 						}
 						
 						// Print the purchases 
-						System.out.println(transRs.getString("name") + "\t" + transRs.getDouble("price") + "\t" + transRs.getInt("Quantity") + "\t" + transRs.getString("transaction_type"));
+						System.out.println(transRs.getString("name") + "\t" + "RM"+transRs.getDouble("price") + "\t" + transRs.getInt("Quantity") + "\t" + transRs.getString("transaction_type"));
 
 						// Update the orderNum for next iteration to reference
 						orderNum = transRs.getInt(1);
 					}
+					// Give a small pause so that user can read at his own pace
+					System.out.println("\nHit [Enter] to continue\n");
+					inScan.nextLine();
 
 					prodPrs.close();
 					break;
@@ -240,7 +248,7 @@ public class main {
 					System.out.println("Suppliers: \n");
 					int k=1;
 					while(supRs.next()){
-						System.out.println(k + ". " + supRs.getString("name") + "\t" + supRs.getString("phone_number"));
+						System.out.println((k++) + ". " + supRs.getString("name") + "\t" + supRs.getString("phone_number"));
 					}
 					supRs.beforeFirst(); // Reset the pointer of the resultSet
 
@@ -254,6 +262,8 @@ public class main {
 						supRs.next();
 					}
 					usChoice = supRs.getInt(1);
+					// Print out the header of the list
+					System.out.println("\nProduct's supplied by " + supRs.getString("name") + ":\n"); // Header of the printout
 					supRs.beforeFirst(); // Reset the pointer of the resultSet
 
 					//Print out all the products supplied by the supplier
@@ -263,9 +273,12 @@ public class main {
 
 					int i=1;
 					while(supRs.next()){
-						System.out.println(i + ". " + supRs.getString("name") + "\t" + supRs.getString("price"));
-						i++;
+						System.out.println((i++) + ". " + supRs.getString("name") + "\tRM" + supRs.getString("price"));
 					}
+					// Give a small pause so that user can read at his own pace
+					System.out.println("\nHit [Enter] to continue\n");
+					inScan.nextLine();
+					
 					supPsm.close();
 					break;
 
