@@ -54,7 +54,7 @@ public class ProductItem{
                 double productPrice = rs.getDouble("price");
                 
                 //print out product column data information
-                System.out.println("Product " + rs.getInt("pId") + ": " + productName + "\t" + "RM" + productPrice + "\n");
+                System.out.println("Product " + rs.getInt("pId") + ": " + productName + "\t" + "RM" + String.format("%.2f", productPrice) + "\n");
             }
             rs.close();
         

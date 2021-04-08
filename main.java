@@ -229,7 +229,7 @@ public class main {
 						}
 						
 						// Print the purchases 
-						System.out.println(transRs.getString("name") + "\t" + "RM"+transRs.getDouble("price") + "\t" + transRs.getInt("Quantity") + "\t" + transRs.getString("transaction_type"));
+						System.out.println(transRs.getString("name") + "\t" + String.format("RM%.2f", transRs.getDouble("price")) + "\t" + transRs.getInt("Quantity") + "\t" + transRs.getString("transaction_type"));
 
 						// Update the orderNum for next iteration to reference
 						orderNum = transRs.getInt(1);
@@ -273,7 +273,7 @@ public class main {
 
 					int i=1;
 					while(supRs.next()){
-						System.out.println((i++) + ". " + supRs.getString("name") + "\tRM" + supRs.getString("price"));
+						System.out.println((i++) + ". " + supRs.getString("name") + "\tRM" + String.format("%.2f",supRs.getDouble("price")));
 					}
 					// Give a small pause so that user can read at his own pace
 					System.out.println("\nHit [Enter] to continue\n");
