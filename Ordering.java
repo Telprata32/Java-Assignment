@@ -18,9 +18,9 @@ public class Ordering {
 		Statement smt = con.createStatement();
 		
 		// Get the ID of the order record that has just been added into the database
-		ResultSet ordRs = smt.executeQuery("Select 1 from Orders order by 'Order ID' DESC"); // Obtain the last row from the Orders table
+		ResultSet ordRs = smt.executeQuery("Select `Order ID` from Orders order by `Order ID` DESC limit 1"); // Obtain the last row from the Orders table
 		ordRs.next();
-		this.orderID = ordRs.getInt("Order ID");
+		this.orderID = ordRs.getInt(1);
 	}
 	
 	// Function to create an Order record in the database table
@@ -31,7 +31,7 @@ public class Ordering {
 		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Shoptrack", "rahim", "himeez225825"); 
 
 		// Prepare the statement to insert record into the database table
-		PreparedStatement prsm = con.prepareStatement("Insert into Orders (Date,Customer ID) values (?,?)");
+		PreparedStatement prsm = con.prepareStatement("Insert into Orders (Date,`Customer ID`) values (?,?)");
 		// Store the current time into a variable
 		LocalDate dtNow = LocalDate.now();
 		Date curDate = Date.valueOf(dtNow); // Convert LocalDate variable into Date format variable

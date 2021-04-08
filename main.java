@@ -26,9 +26,6 @@ public class main {
 			
 		// Use an if else to decide 
 		if (rs2.next()){
-			//Close inScan and con
-			inScan.close();
-
 			// If the user exists then return the user's id to the main class
 			return rs2.getInt("Customer ID");
 		}
@@ -78,9 +75,15 @@ public class main {
 		System.out.print("\nTransaction Type: ");
 		tranChoice = inScan.nextInt(); // obtain transaction type
 		inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
-		
-		// Create transaction and store it
-		Transaction transIn = new Transaction(tranTypeList[tranChoice-1], prodQty, proID, OrderID);
+
+		try {
+			// Create transaction and store it
+			Transaction transIn = new Transaction(tranTypeList[tranChoice-1], prodQty, OrderID, proID);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException ce){
+			ce.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException{
@@ -165,10 +168,10 @@ public class main {
 					//Display every product for user to choose, with reference to their respective supplier's in one table
 					ResultSet rsprod1 = smt.executeQuery("SELECT product.pId, product.name, supplier.name, supplier.phone_number FROM `supplier` INNER join product on supplier.sId = product.supplier_id ORDER BY product.pId ASC"); // Execute query to get all products from the database
 					// initialise variable to count the products for numbering
-					int i = 1;
+					int j = 1;
 					while(rsprod1.next()){
-						System.out.println(i + ". " + rsprod1.getString(2)); // Print one product
-						i++;		
+						System.out.println(j + ". " + rsprod1.getString(2)); // Print one product
+						j++;		
 					}
 					rsprod1.beforeFirst();
 					// obtain user's choice
@@ -176,16 +179,15 @@ public class main {
 					usChoice = inScan.nextInt();
 					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 					
-					// Using the product's ID selected by the user grab the respective details of the supplier from the database
-					while(rsprod1.next()){
-						if (usChoice == rsprod1.getInt(1)){
-							// Print the supplier's details
-							System.out.println("\nSupplier's details: \n");
-							System.out.println("Name: " + rsprod1.getString(3));
-							System.out.println("Contact Number: " + rsprod1.getString(4));
-							break;			
-						}
+					// Move to the specific row according to user's choice
+					for(int i=0; i<usChoice; i++){
+						rsprod1.next();
 					}
+
+					// Print the supplier's details
+					System.out.println("\nSupplier's details: \n");
+					System.out.println("Name: " + rsprod1.getString(3));
+					System.out.println("Contact Number: " + rsprod1.getString(4));
 					break;
 
 				case 3:
@@ -197,6 +199,13 @@ public class main {
 					usChoice = inScan.nextInt(); // Take selected customer's ID
 					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 					
+					// Move to the specific row of the Customer resultset and obtain the customer's ID
+					ResultSet cusRs = smt.executeQuery("Select * from customer");
+					for(int i=0; i<usChoice; i++){
+						cusRs.next();
+					}
+					usChoice = cusRs.getInt(1);
+
 					// List out the orders of the customer
 					// Prepare a query statement to return all orders including the transaction details of every customers
 					PreparedStatement prodPrs = con.prepareStatement("SELECT `Orders`.`Order ID`, Orders.Date, product.pId, product.name, product.price, transaction.Quantity,transaction.transaction_type FROM Orders inner join transaction on `Orders`.`Order ID`=`transaction`.`Order  ID` inner join product on `transaction`.`Product ID`= product.pId where `Orders`.`Customer ID`=?");
@@ -209,8 +218,8 @@ public class main {
 					int orderNum = 0; // previous transaction's orderID
 					while(transRs.next()){
 						// If the current order number is not equal to previous order number (orderNum), print the following
-						if(orderNum!=transRs.getInt("Order ID")){
-							System.out.println("\nOrder " + transRs.getInt("Order ID") + "  (" + transRs.getDate("Date") + "): \n"); //Header for each set of orders
+						if(orderNum!=transRs.getInt(1)){
+							System.out.println("\nOrder " + transRs.getInt(1) + "  (" + transRs.getDate("Date") + "): \n"); //Header for each set of orders
 							System.out.println("Product Name\tPrice\tQuantity\tTransaction Type");
 						}
 						
@@ -218,7 +227,7 @@ public class main {
 						System.out.println(transRs.getString("name") + "\t" + transRs.getDouble("price") + "\t" + transRs.getInt("Quantity") + "\t" + transRs.getString("transaction_type"));
 
 						// Update the orderNum for next iteration to reference
-						orderNum = transRs.getInt("Order ID");
+						orderNum = transRs.getInt(1);
 					}
 
 					prodPrs.close();
@@ -229,21 +238,30 @@ public class main {
 					ResultSet supRs = smt.executeQuery("Select * from supplier");
 					//Print
 					System.out.println("Suppliers: \n");
+					int k=1;
 					while(supRs.next()){
-						System.out.println(supRs.getInt("sId") + ". " + supRs.getString("name") + "\t" + supRs.getString("phone_number"));
+						System.out.println(k + ". " + supRs.getString("name") + "\t" + supRs.getString("phone_number"));
 					}
+					supRs.beforeFirst(); // Reset the pointer of the resultSet
 
 					// Prompt user to select the supplier
 					System.out.print("\nSupplier select: ");
 					usChoice = inScan.nextInt(); // Receive input
 					inScan.nextLine(); // so that for the next inScan.nextLine, it won't take in an empty line
 
+					// Move to the specific row of the Customer resultset and obtain the customer's ID
+					for(int i=0; i<usChoice; i++){
+						supRs.next();
+					}
+					usChoice = supRs.getInt(1);
+					supRs.beforeFirst(); // Reset the pointer of the resultSet
+
 					//Print out all the products supplied by the supplier
 					PreparedStatement supPsm = con.prepareStatement("Select * from product where supplier_id=?");
 					supPsm.setInt(1,usChoice);
 					supRs = supPsm.executeQuery();
 
-					i=1;
+					int i=1;
 					while(supRs.next()){
 						System.out.println(i + ". " + supRs.getString("name") + "\t" + supRs.getString("price"));
 						i++;

@@ -29,7 +29,7 @@ public class Transaction {
 
 		// Store all the data into the database
 		// Prepare the query and then set the values for each parameter left as a "?"
-		PreparedStatement prsmt = con.prepareStatement("Insert into Transaction (transaction_type,Quantity,'Order ID','Product ID') Values (?,?,?,?)");
+		PreparedStatement prsmt = con.prepareStatement("Insert into transaction (transaction_type,Quantity,`Order ID`,`Product ID`) Values (?,?,?,?)");
 		prsmt.setString(1,transType); // 1st parameter = Transaction Type
 		prsmt.setInt(2,productQty); // 2nd parameter = Product quantity
 		prsmt.setInt(3,OrderID); // 3rd parameter = Order ID connected to the Order table
