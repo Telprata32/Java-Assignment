@@ -12,10 +12,7 @@ import java.sql.*;
 
 import com.mysql.cj.protocol.Resultset;
 
-public class Customers {
-	private int id;
-	private String name;
-	private String address;
+public class Customers extends Person{
 	private String phoneNum;
 
 	// Function to store new customers into the database

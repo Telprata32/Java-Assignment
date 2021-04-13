@@ -99,7 +99,7 @@ public class main {
 		
 		// Prepare needed variables and objects
 		int usChoice; /* user's selection from the menu*/ 
-		String[] operationList = {"Key in an order for a customer","Order products from supplier","See customer's order's", "List Products from specific supplier"};
+		String[] operationList = {"Key in an order for a customer","Order products from supplier","See customer's orders", "List Products from specific supplier"};
 		String cusName; // Customer's name
 		
 		// Prompt a menu to the user to select an operation

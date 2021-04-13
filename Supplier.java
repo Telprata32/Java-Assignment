@@ -4,11 +4,7 @@ package Shopping;
 import java.util.Scanner;
 import java.sql.*;
 
-public class Supplier {
-	private int suppID;
-  	private String suppName;
-  	private String suppPhone;
-  	
+public class Supplier extends Person {
   	//Prepare the scanner
   	Scanner input = new Scanner(System.in);
   	  
@@ -30,9 +26,8 @@ public class Supplier {
 
   	// Class' constructor
 	public Supplier(String suppName, String suppPhone) throws ClassNotFoundException, SQLException{
-		// Set the attributes of the class instance	
-		this.suppName = suppName;
-		this.suppPhone = suppPhone;
+		// Call the parent's constructor
+		super(suppName, suppPhone);
 
 		// Call function to store into the database
 		recordSupplier(suppName,suppPhone);		
@@ -40,6 +35,6 @@ public class Supplier {
 
 	// Accessor to get object's id
 	public int getSuppID(){
-		return this.suppID;
+		return this.ID;
 	}
 }
